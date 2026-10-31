@@ -5,6 +5,8 @@
  * This Worker forwards two kinds of request and adds that header, for the origins listed below only:
  *   /v1/...   -> https://api.reccobeats.com/v1/...   (track lookup, audio features, file analysis)
  *   /oembed   -> https://open.spotify.com/oembed     (title and cover of a Spotify track)
+ *   /embed/track/<id> -> https://open.spotify.com/embed/track/<id>  (the page that names the 30 s preview)
+ *   /mp3-preview/<id> -> https://p.scdn.co/mp3-preview/<id>        (the preview audio, analysed in the browser)
  * Nothing is stored. Deploy: see proxy/README.md.
  */
 const ALLOWED_ORIGINS = ['https://mikaelgeraldius.github.io', 'http://localhost:5173', 'http://127.0.0.1:5173']
@@ -12,6 +14,8 @@ const ALLOWED_ORIGINS = ['https://mikaelgeraldius.github.io', 'http://localhost:
 const UPSTREAM = [
   { prefix: '/v1/', target: 'https://api.reccobeats.com' },
   { prefix: '/oembed', target: 'https://open.spotify.com' },
+  { prefix: '/embed/track/', target: 'https://open.spotify.com' },
+  { prefix: '/mp3-preview/', target: 'https://p.scdn.co' },
 ]
 
 function cors(origin) {
@@ -42,13 +46,16 @@ export default {
     const upstream = await fetch(route.target + url.pathname + url.search, {
       method: request.method,
       headers: {
-        Accept: request.headers.get('Accept') || 'application/json',
+        Accept: request.headers.get('Accept') || '*/*',
+        // Spotify serves its embed page to browsers; say we are one.
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36',
         ...(request.headers.get('Content-Type') ? { 'Content-Type': request.headers.get('Content-Type') } : {}),
       },
       body: request.method === 'POST' ? request.body : undefined,
     })
     const headers = new Headers(cors(origin))
-    for (const name of ['Content-Type', 'Retry-After']) {
+    for (const name of ['Content-Type', 'Content-Length', 'Retry-After']) {
       const value = upstream.headers.get(name)
       if (value) headers.set(name, value)
     }

@@ -21,6 +21,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/spotify/, ''),
       },
+      '/scdn': {
+        target: 'https://p.scdn.co',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/scdn/, ''),
+      },
     },
   },
   test: { environment: 'node', include: ['src/**/*.test.ts'] },

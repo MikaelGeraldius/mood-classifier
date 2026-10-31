@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { average, clipStarts, encodeWav, estimateLocally, pickFeatures, spotifyTrackId } from './songs'
+import { average, clipStarts, encodeWav, parseEmbed, pickFeatures, spotifyTrackId } from './songs'
 
 const ID = '4uLU6hMCjMI75M1A2tKUQC'
 
@@ -63,14 +63,28 @@ describe('clips', () => {
   })
 })
 
-describe('estimateLocally', () => {
-  it('finds the tempo of a click track', () => {
-    const rate = 22050
-    const x = new Float32Array(rate * 20)
-    const period = Math.round((60 / 128) * rate)
-    for (let t = 0; t < x.length; t += period) for (let j = 0; j < 400; j++) x[t + j] = Math.sin(j / 3) * (1 - j / 400)
-    const est = estimateLocally(x, rate)
-    expect(Math.abs(est.tempo - 128)).toBeLessThanOrEqual(2)
-    expect(est.loudness).toBeLessThan(0)
+describe('parseEmbed', () => {
+  it('finds the preview, title, artists and cover in Spotify’s embed page', () => {
+    const entity = {
+      name: 'Never Gonna Give You Up',
+      artists: [{ name: 'Rick Astley' }],
+      audioPreview: { url: 'https://p.scdn.co/mp3-preview/abc123def456' },
+      visualIdentity: { image: [{ url: 'https://i.scdn.co/image/small' }, { url: 'https://i.scdn.co/image/big' }] },
+    }
+    const html = `<html><script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+      props: { pageProps: { state: { data: { entity } } } },
+    })}</script></html>`
+    expect(parseEmbed(html)).toEqual({
+      preview: 'https://p.scdn.co/mp3-preview/abc123def456',
+      title: 'Never Gonna Give You Up',
+      artists: 'Rick Astley',
+      cover: 'https://i.scdn.co/image/big',
+    })
+  })
+  it('reads an escaped preview URL and survives a page without data', () => {
+    expect(parseEmbed('"url":"https:\\u002F\\u002Fp.scdn.co\\u002Fmp3-preview\\u002Fxyz789"').preview).toBe(
+      'https://p.scdn.co/mp3-preview/xyz789',
+    )
+    expect(parseEmbed('<html></html>').preview).toBeUndefined()
   })
 })

@@ -86,7 +86,7 @@ export default function Classifier({ forest, error }: { forest: Forest | null; e
         </p>
       </div>
 
-      <SongInput onSong={addSong} fallback={presets[1]} />
+      <SongInput onSong={addSong} />
 
       {songs.length ? (
         <div className="shelf" aria-labelledby="shelf-title">
@@ -211,9 +211,16 @@ function Cover({ song, size = 'sm' }: { song: Song; size?: 'sm' | 'lg' }) {
   )
 }
 
-type Status = { kind: 'idle' } | { kind: 'busy'; text: string } | { kind: 'error'; text: string }
+type Status =
+  | { kind: 'idle' }
+  | { kind: 'busy'; text: string }
+  | { kind: 'error'; text: string }
+  | { kind: 'note'; text: string }
 
-function SongInput({ onSong, fallback }: { onSong: (song: Song) => void; fallback: number[] }) {
+const ESTIMATE_NOTE =
+  'ReccoBeats is unavailable, so the nine features were estimated from the audio in your browser. Loudness and tempo are measured; the rest are rough. Adjust the sliders if you know better.'
+
+function SongInput({ onSong }: { onSong: (song: Song) => void }) {
   const [link, setLink] = useState('')
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const [over, setOver] = useState(false)
@@ -233,9 +240,14 @@ function SongInput({ onSong, fallback }: { onSong: (song: Song) => void; fallbac
     }
     setStatus({ kind: 'busy', text: 'Looking up the track' })
     try {
-      onSong(await songFromSpotify(id))
+      const song = await songFromSpotify(id, (text) => setStatus({ kind: 'busy', text }))
+      onSong(song)
       setLink('')
-      setStatus({ kind: 'idle' })
+      setStatus(
+        song.via === 'estimate-preview'
+          ? { kind: 'note', text: ESTIMATE_NOTE.replace('the audio', 'Spotify’s 30-second preview') }
+          : { kind: 'idle' },
+      )
     } catch (e) {
       setStatus({ kind: 'error', text: songErrorText(e) })
     }
@@ -248,16 +260,9 @@ function SongInput({ onSong, fallback }: { onSong: (song: Song) => void; fallbac
       return
     }
     try {
-      const song = await songFromFile(f, fallback, (text) => setStatus({ kind: 'busy', text }))
+      const song = await songFromFile(f, (text) => setStatus({ kind: 'busy', text }))
       onSong(song)
-      setStatus(
-        song.via === 'estimate'
-          ? {
-              kind: 'error',
-              text: 'ReccoBeats couldn’t be reached, so this page measured loudness, tempo and energy itself and used typical values for the rest. Adjust the sliders if you know better.',
-            }
-          : { kind: 'idle' },
-      )
+      setStatus(song.via === 'estimate' ? { kind: 'note', text: ESTIMATE_NOTE } : { kind: 'idle' })
     } catch (e) {
       setStatus({ kind: 'error', text: songErrorText(e) })
     } finally {
@@ -324,7 +329,7 @@ function SongInput({ onSong, fallback }: { onSong: (song: Song) => void; fallbac
             <span className="spinner" aria-hidden="true" />
             {status.text}…
           </>
-        ) : status.kind === 'error' ? (
+        ) : status.kind === 'error' || status.kind === 'note' ? (
           status.text
         ) : (
           <>
@@ -347,7 +352,8 @@ function Readout({ probs, mood, source }: { probs: number[]; mood: number; sourc
             <p className="now-title">{source.song.title}</p>
             <p className="small">
               {source.song.artist ??
-                (source.song.via === 'estimate' ? 'Uploaded file, partly estimated' : 'Uploaded file')}
+                (source.song.via === 'estimate' ? 'Uploaded file, features estimated' : 'Uploaded file')}
+              {source.song.via === 'estimate-preview' ? ' · estimated from the preview' : ''}
               {source.song.link ? (
                 <>
                   {' · '}
