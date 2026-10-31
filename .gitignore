@@ -6,3 +6,8 @@ dist
 public/fonts/*.woff2
 # The 27 MB source CSV stays out of git; download it from Kaggle (see ml/README.md).
 *.csv
+
+# Design skills installed for this project (emil-design-eng, impeccable, design-taste-frontend)
+.claude/
+.agents/
+.taste-skill/

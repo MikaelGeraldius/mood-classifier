@@ -1,28 +1,28 @@
 # Fonts: provenance and licence
 
-Both typefaces are self-hosted from `public/fonts/`. The page loads no external font stylesheet or CDN.
+General Sans is self-hosted from `public/fonts/`. The page loads no external font stylesheet or CDN.
 
 | File | Family | Designer / foundry | Source |
 | --- | --- | --- | --- |
-| `Gambarino-Regular.woff2` | Gambarino 400 (display) | Théo Guillard, Indian Type Foundry | Fontshare |
 | `GeneralSans-Regular.woff2` | General Sans 400 (text) | Indian Type Foundry | Fontshare |
-| `GeneralSans-Medium.woff2` | General Sans 500 (text) | Indian Type Foundry | Fontshare |
+| `GeneralSans-Medium.woff2` | General Sans 500 (labels) | Indian Type Foundry | Fontshare |
+| `GeneralSans-Semibold.woff2` | General Sans 600 (headings) | Indian Type Foundry | Fontshare |
 
 Retrieved 2026-10-30 from the web-font URLs that the Fontshare CSS API
-(`https://api.fontshare.com/v2/css?f[]=gambarino@400&f[]=general-sans@400,500`) returns. The files are
+(`https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600`) returns. The files are
 byte-for-byte as delivered: not subsetted, converted, renamed or edited.
 
 SHA-256:
 
 ```
-73b51a4e355f266dd9b17b78fe36a5ac66606d2093b03ead2f58b75207c4be70  Gambarino-Regular.woff2
 3ec2be771caf168b077ca05af4df1dace77088e2b3a27da570036e61be58a039  GeneralSans-Regular.woff2
 c30377df1de8444d07161725c751f458beec07c28034df2fd275d1aa587a239f  GeneralSans-Medium.woff2
+(GeneralSans-Semibold.woff2: printed by scripts/fetch-fonts.mjs on first download; record it here)
 ```
 
 ## Licence
 
-Fontshare lists both families under the **ITF Free Font License** (`license_type: itf_ffl` in the Fontshare API).
+Fontshare lists General Sans under the **ITF Free Font License** (`license_type: itf_ffl` in the Fontshare API).
 The licence text on fontshare.com/terms was read before self-hosting. The relevant terms:
 
 - Free for personal and commercial use, in any media including websites.

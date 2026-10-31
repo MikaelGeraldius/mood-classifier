@@ -18,44 +18,46 @@ export default function Results() {
   return (
     <section className="chapter results" id="results" data-tone="ground" aria-labelledby="results-title">
       <div className="intro">
-        <h2 id="results-title">How often it is right</h2>
-        <p className="lead">
+        <h2 id="results-title" className="reveal" data-reveal>
+          How often it is right
+        </h2>
+        <p className="lead reveal" data-reveal>
           Tested on {thousands(m.testRows)} songs the model never saw, a fifth of the dataset held out with the mood mix
           kept the same.
         </p>
       </div>
 
       <dl className="facts">
-        <div>
+        <div className="reveal" data-reveal>
           <dt className="small">Full model in the notebook, 500 trees</dt>
           <dd className="numeral">{pct(full.accuracy, 1)}</dd>
         </div>
-        <div>
+        <div className="reveal" data-reveal>
           <dt className="small">The 40-tree model on this page</dt>
           <dd className="numeral">{pct(web.accuracy, 1)}</dd>
         </div>
-        <div>
+        <div className="reveal" data-reveal>
           <dt className="small">Logistic regression, same split</dt>
           <dd className="numeral">{pct(m.baselineLogReg, 1)}</dd>
         </div>
-        <div>
+        <div className="reveal" data-reveal>
           <dt className="small">Always answering “happy”</dt>
           <dd className="numeral">{pct(m.baselineMajority, 1)}</dd>
         </div>
       </dl>
 
-      <fieldset className="choices which">
+      <fieldset className="chips which">
         <legend className="small">Show the details for</legend>
-        <button type="button" className="choice" aria-pressed={which === 'full'} onClick={() => setWhich('full')}>
+        <button type="button" className="chip" aria-pressed={which === 'full'} onClick={() => setWhich('full')}>
           the full model
         </button>
-        <button type="button" className="choice" aria-pressed={which === 'web'} onClick={() => setWhich('web')}>
+        <button type="button" className="chip" aria-pressed={which === 'web'} onClick={() => setWhich('web')}>
           this page’s model
         </button>
       </fieldset>
 
       <div className="result-grid">
-        <div className="block">
+        <div className="block reveal" data-reveal>
           <h3>Where it gets confused</h3>
           <p className="small">
             Each row is a song’s real mood; each column is what the model called it. The squares grow with the share of
@@ -64,7 +66,7 @@ export default function Results() {
           <Confusion matrix={data.confusion} />
         </div>
 
-        <div className="block">
+        <div className="block reveal" data-reveal>
           <h3>Per mood</h3>
           <p className="small">
             Precision: of the songs it called this mood, how many were. Recall: of the songs that were, how many it
@@ -92,7 +94,7 @@ export default function Results() {
           </table>
         </div>
 
-        <div className="block wide">
+        <div className="block wide reveal" data-reveal>
           <h3>What it listens to</h3>
           <p className="small">
             Feature importance: how much each feature’s splits cleaned up the moods, summed over the forest.

@@ -8,9 +8,16 @@
       name="description"
       content="Set nine Spotify audio features and a Random Forest trained on 278,000 songs names the mood: sad, happy, energetic or calm. Runs in the browser."
     />
-    <meta name="theme-color" content="#0e1115" />
     <meta name="color-scheme" content="dark" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="theme-color" content="#0b0c0b" />
+    <script>
+      // Entrances only apply when script runs; if the app never starts, show everything.
+      document.documentElement.classList.add('js')
+      setTimeout(function () {
+        if (!document.documentElement.classList.contains('ready')) document.documentElement.classList.add('reveal-fallback')
+      }, 3000)
+    </script>
   </head>
   <body>
     <div id="root"></div>

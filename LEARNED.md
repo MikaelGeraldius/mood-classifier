@@ -9,7 +9,8 @@ recall 0.97); energetic is hardest (0.89 / 0.90) because it overlaps with happy.
 
 **My part on the web version.** Retrained a 40-tree, depth-14 forest (91.3%), packed its 357,368 nodes into a
 1.4 MB (gzipped) binary, and wrote a TypeScript reader that agrees with scikit-learn on 99.95% of test songs. Built an
-interactive page: sliders with live what-if lines, a valence/energy mood map you can drag, and the evaluation.
+interactive page: paste a Spotify link or upload a song and get its mood, sliders with live what-if lines, a
+valence/energy mood map you can drag, and the evaluation.
 
 ## What I learned
 
@@ -23,8 +24,9 @@ interactive page: sliders with live what-if lines, a valence/energy mood map you
 5. **Trees don't need scaling.** Thresholds move with the scale; the answers don't. Dropping the scaler simplified
    the browser model.
 6. **Shipping a model is a size problem.** 9.2 million nodes down to 357 thousand cost about one point of accuracy.
-7. **Third-party APIs change.** Spotify closed audio features to new apps in November 2024, so the page can't look
-   songs up by name; you set the features or load a real test-set song.
+7. **Third-party APIs change.** Spotify closed audio features to new apps in November 2024, so the model's own
+   inputs became hard to get. The page uses ReccoBeats instead (same nine features, from a Spotify link or an
+   uploaded file) and measures loudness, tempo and energy itself if that service is down.
 
 Skills: Python, pandas, scikit-learn (Random Forest, evaluation), model compression and export, TypeScript,
 React, data visualisation, accessible interactive UI.
