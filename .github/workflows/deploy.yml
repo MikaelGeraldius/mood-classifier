@@ -1,0 +1,58 @@
+# Builds the Vite site and deploys ./dist to GitHub Pages.
+#
+# Not yet published: nothing runs until this repository exists on GitHub and
+# Pages is set to "GitHub Actions" (Settings > Pages > Build and deployment > Source).
+#
+# Base path: vite.config.ts defaults to /mood-classifier/ (a project site at
+# https://<user>.github.io/mood-classifier/). If the repository has another name,
+# or the site uses a custom domain or a <user>.github.io repository, set BASE_PATH
+# below (for example "/" or "/other-repo/").
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+
+      - run: npm run build
+        env:
+          BASE_PATH: /mood-classifier/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

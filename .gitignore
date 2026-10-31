@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.vite
+# Font files: the ITF Free Font License forbids sharing them through a repository (see FONTS.md).
+public/fonts/*.woff2
+# The 27 MB source CSV stays out of git; download it from Kaggle (see ml/README.md).
+*.csv

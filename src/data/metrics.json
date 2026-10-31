@@ -1,0 +1,91 @@
+{
+  "rows": 277938,
+  "notebookDropDuplicatesRemoved": 0,
+  "duplicateSongs": 1687,
+  "classCounts": {
+    "sad": 82058,
+    "happy": 106429,
+    "energetic": 47065,
+    "calm": 42386
+  },
+  "trainRows": 222350,
+  "testRows": 55588,
+  "testRowsAlsoInTrain": 547,
+  "scalingChangedPredictions": 504,
+  "baselineMajority": 0.38292437216665465,
+  "baselineLogReg": 0.8351982442253724,
+  "top3Accuracy": 0.7994890983665539,
+  "valenceEnergyAccuracy": 0.6731668705476002,
+  "trainSeconds": 6.7,
+  "web": {
+    "trees": 40,
+    "maxDepth": 14,
+    "accuracy": 0.913380585737929,
+    "confusion": [
+      [
+        14872,
+        713,
+        314,
+        513
+      ],
+      [
+        1015,
+        18883,
+        1324,
+        64
+      ],
+      [
+        105,
+        557,
+        8742,
+        9
+      ],
+      [
+        168,
+        27,
+        6,
+        8276
+      ]
+    ],
+    "perClass": [
+      {
+        "precision": 0.9202970297029703,
+        "recall": 0.9061662198391421,
+        "f1": 0.9131769618076876,
+        "support": 16412.0
+      },
+      {
+        "precision": 0.9357284440039643,
+        "recall": 0.8871088978671428,
+        "f1": 0.9107702696184826,
+        "support": 21286.0
+      },
+      {
+        "precision": 0.8417099942229925,
+        "recall": 0.9287156060767024,
+        "f1": 0.8830749027728673,
+        "support": 9413.0
+      },
+      {
+        "precision": 0.9338749717896637,
+        "recall": 0.9762887814085172,
+        "f1": 0.9546109925601246,
+        "support": 8477.0
+      }
+    ],
+    "importance": {
+      "energy": 0.24956812492445213,
+      "instrumentalness": 0.23300347536328053,
+      "acousticness": 0.16930159748548215,
+      "loudness": 0.13412747152291118,
+      "danceability": 0.09295306426942435,
+      "speechiness": 0.05271048341122978,
+      "valence": 0.04272644106337423,
+      "tempo": 0.016543146150451486,
+      "liveness": 0.009066195809394093
+    },
+    "nodes": 357368,
+    "bytes": 3216488,
+    "quantisedAgreement": 0.9995
+  }
+}
