@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { average, clipStarts, encodeWav, parseEmbed, pickFeatures, spotifyTrackId } from './songs'
+import { average, clipStarts, encodeWav, parseEmbed, pickFeatures, proxyOrigin, spotifyTrackId } from './songs'
 
 const ID = '4uLU6hMCjMI75M1A2tKUQC'
 
@@ -86,5 +86,21 @@ describe('parseEmbed', () => {
       'https://p.scdn.co/mp3-preview/xyz789',
     )
     expect(parseEmbed('<html></html>').preview).toBeUndefined()
+  })
+})
+
+describe('proxyOrigin', () => {
+  it('accepts a Worker address and ignores anything with a path', () => {
+    expect(proxyOrigin('https://mood-proxy.mikaelgeraldius.workers.dev')).toBe(
+      'https://mood-proxy.mikaelgeraldius.workers.dev',
+    )
+    expect(proxyOrigin(' https://mood-proxy.mikaelgeraldius.workers.dev/ ')).toBe(
+      'https://mood-proxy.mikaelgeraldius.workers.dev',
+    )
+    expect(
+      proxyOrigin('https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md'),
+    ).toBeUndefined()
+    expect(proxyOrigin('mood-proxy.workers.dev')).toBeUndefined()
+    expect(proxyOrigin('')).toBeUndefined()
   })
 })

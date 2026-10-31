@@ -21,7 +21,19 @@ import { featureKeys } from './content'
  * small proxy that adds the header: Vite's dev-server proxy during `npm run dev`, and the Cloudflare Worker in
  * proxy/ on the live site (its URL is set at build time as VITE_RECCOBEATS_PROXY). Without either, direct.
  */
-const PROXY = (import.meta.env.VITE_RECCOBEATS_PROXY as string | undefined)?.replace(/\/$/, '')
+/** Only a bare origin counts (https://host, no path): a mistyped value must not send every lookup astray. */
+export function proxyOrigin(value: string | undefined): string | undefined {
+  if (!value) return undefined
+  try {
+    const url = new URL(value.trim())
+    return url.protocol === 'https:' && (url.pathname === '/' || url.pathname === '') && !url.search
+      ? url.origin
+      : undefined
+  } catch {
+    return undefined
+  }
+}
+const PROXY = proxyOrigin(import.meta.env.VITE_RECCOBEATS_PROXY as string | undefined)
 const API = PROXY ? `${PROXY}/v1` : import.meta.env.DEV ? '/reccobeats/v1' : 'https://api.reccobeats.com/v1'
 const SPOTIFY = PROXY ?? (import.meta.env.DEV ? '/spotify' : 'https://open.spotify.com')
 const SCDN = PROXY ?? (import.meta.env.DEV ? '/scdn' : 'https://p.scdn.co')
