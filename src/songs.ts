@@ -12,7 +12,15 @@
  */
 import { featureKeys } from './content'
 
-const API = 'https://api.reccobeats.com/v1'
+/**
+ * Where requests go. ReccoBeats may not allow calls straight from web pages (CORS), so they can go through a
+ * small proxy that adds the header: Vite's dev-server proxy during `npm run dev`, and the Cloudflare Worker in
+ * proxy/ on the live site (its URL is set at build time as VITE_RECCOBEATS_PROXY). Without either, direct.
+ */
+const PROXY = (import.meta.env.VITE_RECCOBEATS_PROXY as string | undefined)?.replace(/\/$/, '')
+const API = PROXY ? `${PROXY}/v1` : import.meta.env.DEV ? '/reccobeats/v1' : 'https://api.reccobeats.com/v1'
+const OEMBED = PROXY ? `${PROXY}/oembed` : import.meta.env.DEV ? '/spotify/oembed' : 'https://open.spotify.com/oembed'
+export const viaProxy = Boolean(PROXY) || import.meta.env.DEV
 
 export interface Song {
   /** Stable key: "spotify:<id>" or "file:<name>:<size>". */
@@ -67,7 +75,9 @@ async function getJson(url: string, init?: RequestInit) {
   try {
     res = await fetch(url, { ...init, headers: { Accept: 'application/json', ...init?.headers } })
   } catch {
-    throw new SongError('offline')
+    // fetch only throws without an answer: no network, or the browser refused to hand over a reply
+    // (a missing CORS header, an extension, a page that forbids outside requests).
+    throw new SongError(navigator.onLine === false ? 'offline' : 'blocked')
   }
   if (res.status === 429) throw new SongError('busy')
   if (!res.ok) throw new SongError(`http-${res.status}`)
@@ -78,7 +88,7 @@ export async function songFromSpotify(id: string): Promise<Song> {
   const link = `https://open.spotify.com/track/${id}`
   // Title and cover from Spotify's public oEmbed; artist and features from ReccoBeats. Each is optional but the features.
   const [embed, track, direct] = await Promise.allSettled([
-    getJson(`https://open.spotify.com/oembed?url=${encodeURIComponent(link)}`),
+    getJson(`${OEMBED}?url=${encodeURIComponent(link)}`),
     getJson(`${API}/track?ids=${id}`),
     getJson(`${API}/audio-features?ids=${id}`),
   ])
@@ -204,7 +214,7 @@ export async function songFromFile(file: File, fallback: number[], progress: Pro
       if (f) results.push(f)
     } catch (error) {
       lastError = error instanceof SongError ? error : new SongError('offline')
-      if (lastError.message === 'offline') break
+      if (lastError.message === 'offline' || lastError.message === 'blocked') break
     }
   }
   const title = file.name.replace(/\.[^.]+$/, '').replace(/[_]+/g, ' ')
@@ -291,8 +301,11 @@ export function songErrorText(error: unknown): string {
   if (code === 'not-found')
     return 'ReccoBeats has no features for this track. Upload the audio file instead and it will be analysed directly.'
   if (code === 'busy') return 'ReccoBeats is busy right now. Wait a few seconds and try again.'
-  if (code === 'offline')
-    return 'Couldn’t reach ReccoBeats, which supplies the features. Check your connection, or upload the file to measure it here.'
+  if (code === 'offline') return 'You’re offline. Reconnect and try again, or upload the file to measure it here.'
+  if (code === 'blocked')
+    return viaProxy
+      ? 'ReccoBeats didn’t answer through the proxy. It may be down; try again in a minute, or upload the file to measure it here.'
+      : 'Your browser blocked the request to ReccoBeats, which supplies the features. ReccoBeats doesn’t let web pages call it directly, so this site needs its proxy set up (see the README), or an extension is blocking it. You can still upload the file to measure it here.'
   if (code === 'decode') return 'This browser can’t read that file. Try an MP3, WAV, OGG, M4A or FLAC.'
   if (code.startsWith('http-')) return `ReccoBeats answered with an error (${code.slice(5)}). Try again in a moment.`
   return 'Something went wrong reading that song. Try again, or set the sliders by hand.'

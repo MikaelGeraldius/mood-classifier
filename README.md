@@ -22,6 +22,15 @@ Spotify closed its audio-features API to new apps in November 2024, so the featu
 
 Analysed songs are kept in this browser's localStorage (up to 24). The mood is always computed locally.
 
+**Proxy.** Browsers only let a page read ReccoBeats' replies if ReccoBeats sends CORS headers, and on the live
+site the requests were refused ("Your browser blocked the request…"). So requests go through a proxy:
+
+- `npm run dev`: Vite's dev server proxies `/reccobeats/*` and `/spotify/oembed` (`vite.config.ts`). Nothing
+  to set up.
+- Live site: a Cloudflare Worker (`proxy/`, free plan). Deploy it once and set its address as the repository
+  variable `RECCOBEATS_PROXY`; the Pages workflow passes it in as `VITE_RECCOBEATS_PROXY`. Steps in
+  `proxy/README.md`. Without it the site calls ReccoBeats directly.
+
 **Not yet tested against the live ReccoBeats API**: the build environment couldn't reach it. The flows are
 tested end to end with mocked responses (shapes taken from its OpenAPI description), and the parser accepts
 both `{ content: [...] }` lists and bare objects. Check a link and an upload once on the deployed site.

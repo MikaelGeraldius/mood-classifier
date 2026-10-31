@@ -42,6 +42,8 @@ jobs:
       - run: npm run build
         env:
           BASE_PATH: /mood-classifier/
+          # The Cloudflare Worker in proxy/ (see proxy/README.md). Empty: the site calls ReccoBeats directly.
+          VITE_RECCOBEATS_PROXY: ${{ vars.RECCOBEATS_PROXY }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
