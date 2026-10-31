@@ -39,22 +39,9 @@ jobs:
       - run: npm test
 
 
-      # Shows which proxy this build uses (a public address, not a secret). It must be a bare https:// origin.
-      - name: Check proxy address
-        env:
-          PROXY: ${{ vars.RECCOBEATS_PROXY }}
-        run: |
-          echo "RECCOBEATS_PROXY = '${PROXY}'"
-          if [ -n "$PROXY" ] && ! echo "$PROXY" | grep -Eq '^https://[^/ ]+/?$'; then
-            echo "::error::RECCOBEATS_PROXY must be just the Worker address, like https://mood-proxy.<you>.workers.dev"
-            exit 1
-          fi
-
       - run: npm run build
         env:
           BASE_PATH: /mood-classifier/
-          # The Cloudflare Worker in proxy/ (see proxy/README.md). Empty: the site calls ReccoBeats directly.
-          VITE_RECCOBEATS_PROXY: ${{ vars.RECCOBEATS_PROXY }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

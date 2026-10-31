@@ -30,8 +30,7 @@ site the requests were refused ("Your browser blocked the request…"). So reque
 
 - `npm run dev`: Vite's dev server proxies `/reccobeats/*`, `/spotify/*` and `/scdn/*` (`vite.config.ts`). Nothing
   to set up.
-- Live site: a Cloudflare Worker (`proxy/`, free plan). Deploy it once and set its address as the repository
-  variable `RECCOBEATS_PROXY`; the Pages workflow passes it in as `VITE_RECCOBEATS_PROXY`. Steps in
+- Live site: a Cloudflare Worker (`proxy/`, free plan) at the address in `src/config.ts`. Deploy steps in
   `proxy/README.md`. Without it the site calls ReccoBeats directly.
 
 **Not yet tested against the live ReccoBeats API**: the build environment couldn't reach it. The flows are

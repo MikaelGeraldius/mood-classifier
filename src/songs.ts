@@ -14,6 +14,7 @@
  * the track's public 30-second preview, found in Spotify's embed page. Those are estimates, and the page says so.
  */
 import { analyseAudio } from './analysis'
+import { PROXY_URL } from './config'
 import { featureKeys } from './content'
 
 /**
@@ -33,7 +34,10 @@ export function proxyOrigin(value: string | undefined): string | undefined {
     return undefined
   }
 }
-const PROXY = proxyOrigin(import.meta.env.VITE_RECCOBEATS_PROXY as string | undefined)
+// During `npm run dev` the dev server's own proxy is used (vite.config.ts); the built site uses the Worker.
+const PROXY =
+  proxyOrigin(import.meta.env.VITE_RECCOBEATS_PROXY as string | undefined) ??
+  (import.meta.env.DEV ? undefined : proxyOrigin(PROXY_URL))
 const API = PROXY ? `${PROXY}/v1` : import.meta.env.DEV ? '/reccobeats/v1' : 'https://api.reccobeats.com/v1'
 const SPOTIFY = PROXY ?? (import.meta.env.DEV ? '/spotify' : 'https://open.spotify.com')
 const SCDN = PROXY ?? (import.meta.env.DEV ? '/scdn' : 'https://p.scdn.co')

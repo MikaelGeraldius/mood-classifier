@@ -21,8 +21,8 @@ Run `npx wrangler deploy` again from this folder.
 
 ## Point the site at it
 
-In the GitHub repository: Settings > Secrets and variables > Actions > Variables > New repository variable,
-name `RECCOBEATS_PROXY`, value the Worker address. Then re-run the "Deploy to GitHub Pages" workflow (or push).
+The address is in `src/config.ts` (`PROXY_URL`). It's public, not a secret, so it is committed with the code.
+If you deploy the Worker under another name, change it there and push. No GitHub settings are needed.
 
 To check the Worker: `curl -H "Origin: https://mikaelgeraldius.github.io" "https://mood-proxy.<you>.workers.dev/v1/track?ids=4uLU6hMCjMI75M1A2tKUQC"`
 should print JSON.
