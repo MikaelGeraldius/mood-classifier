@@ -1,7 +1,6 @@
-# Builds the Vite site and deploys ./dist to GitHub Pages.
-#
-# Not yet published: nothing runs until this repository exists on GitHub and
-# Pages is set to "GitHub Actions" (Settings > Pages > Build and deployment > Source).
+# Runs the tests, builds the Vite site and deploys ./dist to GitHub Pages on
+# every push to main. Pages source is "GitHub Actions"
+# (Settings > Pages > Build and deployment > Source).
 #
 # Base path: vite.config.ts defaults to /mood-classifier/ (a project site at
 # https://<user>.github.io/mood-classifier/). If the repository has another name,
